@@ -213,14 +213,7 @@ video for how this is done). Try your new layout!
 
 ## Contributing
 
-https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
-
 Pull requests welcome. 
-
-## Versioning
-
-http://semver.org/
-
 
 * **Dimi Shahbaz** - *Initial work* - [dshahbaz](https://github.com/dshahbaz)
 * **Roger Sen** - *Code cleanup and dependency removal* [rogersm](https://github.com/dshahbaz)
