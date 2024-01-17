@@ -216,7 +216,7 @@ video for how this is done). Try your new layout!
 Pull requests welcome. 
 
 * **Dimi Shahbaz** - *Initial work* - [dshahbaz](https://github.com/dshahbaz)
-* **Roger Sen** - *Code cleanup and dependency removal* [rogersm](https://github.com/dshahbaz)
+* **Roger Sen** - *Code cleanup and dependency removal* [rogersm](https://github.com/rogersm)
 
 ## License
 
