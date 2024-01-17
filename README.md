@@ -35,7 +35,7 @@ $ go build .
 
 ```
 
-I have not tested it for window, but unix/linux and mac should work flaswlessly.
+I have not tested it for windows, but unix/linux and mac should work flawlessly.
 
 Code does not require to generate protobuffers' firmware, but the original .proto file is provided in case you want to modify it.
 
