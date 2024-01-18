@@ -12,6 +12,8 @@ import (
 	//"github.com/golang/protobuf/proto"
 )
 
+const VERSION = "2.0.1"
+
 // Looking at the top of the Max Falcon-8:
 //
 // | 1 | 2 | 3 | 4 |
@@ -52,16 +54,7 @@ const (
 	fd_stop = 0xfd
 )
 
-var (
-	// The firmware.bin file path.
-	fpath string
-
-	// The path to the proto in textproto format.
-	text_proto string
-
-	// Whether to verify the proto only (do no firmware writing).
-	verify_only bool
-)
+var ()
 
 // writeByteAtOffset writes byte b at offset of w. No bounds checking is done.
 func writeByteAtOffset(w *[]byte, b byte, offset uint) error {
@@ -213,24 +206,41 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 }
 
 func main() {
-	flag.BoolVar(
-		&verify_only,
-		"verify_only",
-		false,
-		"verify the -text_proto only (do no firmware writing).")
 
-	flag.StringVar(
-		&text_proto,
-		"text_proto",
-		"",
-		"the path to the serialized proto in textproto format.")
+	var fpath string               // The firmware.bin file path.
+	var text_proto string          // The path to the proto in textproto format.
+	var verify_only bool           // Whether to verify the proto only (do no firmware writing).
+	var showhelp, showversion bool // show help and version
 
-	flag.StringVar(
-		&fpath,
-		"firmware_bin_path",
-		"firmware.bin",
-		"path to the firmware on the device; modified in-place.")
+	flag.BoolVar(&verify_only, "verify_only", false, "verify the -text_proto only (do no firmware writing).")
+	flag.StringVar(&text_proto, "text_proto", "", "the path to the serialized proto in textproto format.")
+	flag.StringVar(&fpath, "firmware_bin_path", "", "path to the firmware on the device; modified in-place.")
+	flag.BoolVar(&showhelp, "help", false, "show this help")
+	flag.BoolVar(&showversion, "version", false, "show current software version")
+
 	flag.Parse()
+
+	if showversion {
+		fmt.Fprintln(os.Stderr, VERSION)
+		return
+	}
+
+	if showhelp {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	// we only can run the program if
+	// text_proto != "" && fpath != ""
+	// text_proto != "" && verify_only
+
+	// so, if we don't meet these conditions we show which parameters are needed:
+
+	if !(text_proto != "" && fpath != "" ||
+		text_proto != "" && verify_only) {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
 
 	tp, err := os.ReadFile(text_proto)
 	if err != nil {
