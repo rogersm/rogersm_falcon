@@ -5,8 +5,7 @@ import (
 
 	pb "rogersm_falcon/firmware"
 
-	//	"google.golang.org/protobuf/proto"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/encoding/prototext"
 )
 
 func TestVerifyButtonBinding(t *testing.T) {
@@ -204,9 +203,9 @@ func TestVerifyButtonBinding(t *testing.T) {
 	for _, test := range tests {
 		bb.Reset()
 
-		err := proto.UnmarshalText(test.text, &bb)
+		err := prototext.Unmarshal([]byte(test.text), &bb)
 		if err != nil {
-			t.Errorf("UnmarshalText(%v): %v", test.text, err)
+			t.Errorf("prototext.Unmarshal(%v): %v", test.text, err)
 		}
 
 		err = VerifyButtonBinding(&bb)

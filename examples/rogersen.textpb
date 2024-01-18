@@ -1,0 +1,24 @@
+button1 {
+  string: 'r'
+}
+button2 {
+  string: 'o'
+}
+button3 {
+  string: 'g'
+}
+button4 {
+  string: 'e'
+}
+button5 {
+  string: 'r'
+}
+button6 {
+  string: 's'
+}
+button7 {
+  string: 'e'
+}
+button8 {
+  string: 'n'
+}
