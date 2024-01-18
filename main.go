@@ -8,8 +8,8 @@ import (
 
 	pb "rogersm_falcon/firmware"
 
-	//	"google.golang.org/protobuf/proto"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/encoding/prototext"
+	//"github.com/golang/protobuf/proto"
 )
 
 // Looking at the top of the Max Falcon-8:
@@ -239,13 +239,21 @@ func main() {
 	}
 
 	bindings := pb.ButtonBindings{}
-	err = proto.UnmarshalText(string(tp), &bindings)
+
+	err = prototext.Unmarshal(tp, &bindings)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error parsing proto: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(proto.MarshalTextString(&bindings))
+	output, err := prototext.Marshal(&bindings)
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error marshaling proto: %v\n", err)
+		os.Exit(1)
+	}
+
+	fmt.Println(string(output))
 
 	err = VerifyButtonBindings(&bindings)
 
