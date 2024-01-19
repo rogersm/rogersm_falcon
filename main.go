@@ -53,12 +53,9 @@ const (
 	fd_stop = 0xfd
 )
 
-var ()
-
 // writeByteAtOffset writes byte b at offset of w. No bounds checking is done.
-func writeByteAtOffset(w *[]byte, b byte, offset uint) error {
+func writeByteAtOffset(w *[]byte, b byte, offset uint) {
 	(*w)[offset] = b
-	return nil
 }
 
 // writeProgramAtOffset serializes a prog's ProgramSet messages at offset of w.
