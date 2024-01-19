@@ -9,10 +9,9 @@ import (
 	pb "rogersm_falcon/firmware"
 
 	"google.golang.org/protobuf/encoding/prototext"
-	//"github.com/golang/protobuf/proto"
 )
 
-const VERSION = "2.0.1"
+const VERSION = "2.0.2"
 
 // Looking at the top of the Max Falcon-8:
 //
@@ -64,14 +63,11 @@ func writeByteAtOffset(w *[]byte, b byte, offset uint) error {
 
 // writeProgramAtOffset serializes a prog's ProgramSet messages at offset of w.
 func writeProgramAtOffset(w *[]byte, prog *pb.Program, offset uint) {
-	// Now write the program at the program offset.
+
 	var i int
-	var ps *pb.ProgramSet
 
-	// Get the program sets.
-	pss := prog.GetProgramSet()
-
-	for i, ps = range pss {
+	// Now write the program at the program offset.
+	for i, ps := range prog.GetProgramSet() {
 		fmt.Println("i = ", i)
 		// 8 bytes per program set.
 		progset_start := offset + uint(i*8)
@@ -116,16 +112,10 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 	// bs creates a mapping of Binding getter, button offset, program key to use
 	// (see key_prog# above), and program offset.
 	bs := []struct {
-		binding func() *pb.ButtonBinding
-
-		// Button offset.
-		boff uint
-
-		// Button # to program key. These are the special constants defined
-		key_prog uint
-
-		// Program offset.
-		progoff uint
+		binding  func() *pb.ButtonBinding
+		boff     uint // Button offset.
+		key_prog uint // Button # to program key. These are the special constants defined
+		progoff  uint // Program offset.
 	}{
 		{
 			bindings.GetButton1,
@@ -222,7 +212,7 @@ func main() {
 
 	if showversion {
 		fmt.Fprintln(os.Stderr, VERSION)
-		return
+		os.Exit(0)
 	}
 
 	if showhelp {
@@ -250,8 +240,7 @@ func main() {
 
 	bindings := pb.ButtonBindings{}
 
-	err = prototext.Unmarshal(tp, &bindings)
-	if err != nil {
+	if err = prototext.Unmarshal(tp, &bindings); err != nil {
 		fmt.Fprintf(os.Stderr, "error parsing proto: %v\n", err)
 		os.Exit(1)
 	}
@@ -265,9 +254,7 @@ func main() {
 
 	fmt.Println(string(output))
 
-	err = VerifyButtonBindings(&bindings)
-
-	if err != nil {
+	if err = VerifyButtonBindings(&bindings); err != nil {
 		fmt.Fprintf(os.Stderr, "error verifying button bindings: %v\n", err)
 		os.Exit(1)
 	}
@@ -278,7 +265,7 @@ func main() {
 
 	f, err := os.OpenFile(fpath, os.O_RDWR, 0644)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "unable to open %s (%s)", fpath, err)
 		os.Exit(1)
 	}
 	defer f.Close()
@@ -295,7 +282,7 @@ func main() {
 	// with careful scrutiny of `strace` runs).
 	b, err := io.ReadAll(f)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "unable to read %s (%s)", fpath, err)
 		os.Exit(1)
 	}
 
@@ -304,8 +291,10 @@ func main() {
 	f.Seek(int64(0), io.SeekStart)
 	n, err := f.Write(b)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintf(os.Stderr, "unable to write %s (%s)", fpath, err)
 		os.Exit(1)
 	}
 	fmt.Println("bytes written:", n)
+
+	os.Exit(1)
 }
