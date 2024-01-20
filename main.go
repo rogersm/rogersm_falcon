@@ -114,54 +114,14 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 		key_prog uint // Button # to program key. These are the special constants defined
 		progoff  uint // Program offset.
 	}{
-		{
-			bindings.GetButton1,
-			loc_b1,
-			key_prog1,
-			loc_prog1,
-		},
-		{
-			bindings.GetButton2,
-			loc_b2,
-			key_prog2,
-			loc_prog2,
-		},
-		{
-			bindings.GetButton3,
-			loc_b3,
-			key_prog3,
-			loc_prog3,
-		},
-		{
-			bindings.GetButton4,
-			loc_b4,
-			key_prog4,
-			loc_prog4,
-		},
-		{
-			bindings.GetButton5,
-			loc_b5,
-			key_prog5,
-			loc_prog5,
-		},
-		{
-			bindings.GetButton6,
-			loc_b6,
-			key_prog6,
-			loc_prog6,
-		},
-		{
-			bindings.GetButton7,
-			loc_b7,
-			key_prog7,
-			loc_prog7,
-		},
-		{
-			bindings.GetButton8,
-			loc_b8,
-			key_prog8,
-			loc_prog8,
-		},
+		{bindings.GetButton1, loc_b1, key_prog1, loc_prog1},
+		{bindings.GetButton2, loc_b2, key_prog2, loc_prog2},
+		{bindings.GetButton3, loc_b3, key_prog3, loc_prog3},
+		{bindings.GetButton4, loc_b4, key_prog4, loc_prog4},
+		{bindings.GetButton5, loc_b5, key_prog5, loc_prog5},
+		{bindings.GetButton6, loc_b6, key_prog6, loc_prog6},
+		{bindings.GetButton7, loc_b7, key_prog7, loc_prog7},
+		{bindings.GetButton8, loc_b8, key_prog8, loc_prog8},
 	}
 
 	// Bindings have already been verified, so no need to check errors.

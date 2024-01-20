@@ -134,7 +134,7 @@ button4 {
 #### Key constants
 
 Available modifiers (defined in
-[firmware/proto/firmware_keys.proto](firmware/proto/firmware_keys.proto)):
+[firmware.proto](firmware.proto)):
 
 ```
 NoModifier
@@ -156,8 +156,8 @@ RAlt_RShi
 RAlt_RCtr_Rshi
 ```
 
-Special keys (defined in
-[firmware/proto/hid.proto](firmware/proto/hid.proto)):
+Special keys (also defined in
+[firmware.proto](firmware.proto)):
 
 ```
 Next_track
