@@ -43,7 +43,7 @@ Code does not require to generate protobuffers' firmware, but the original .prot
 
 Firmware definitions are written in protocol buffer *text format* (`.textpb`).
 There is an example in
-[firmware/examples/max_falcon8_test.textpb](firmware/examples/max_falcon8_test.textpb),
+[examples/max_falcon8_test.textpb](examples/max_falcon8_test.textpb),
 but basically:
 
 To map a button to a key:
