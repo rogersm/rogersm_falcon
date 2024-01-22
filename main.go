@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
-const VERSION = "2.0.2"
+const VERSION = "2.1.0"
 
 // Looking at the top of the Max Falcon-8:
 //
@@ -53,29 +53,45 @@ const (
 	fd_stop = 0xfd
 )
 
+var DEBUG bool
+
+// Debug if enabled
+func DebugPrintf(format string, a ...any) {
+	if DEBUG {
+		fmt.Printf(format+"\n", a...)
+	}
+}
+
 // writeByteAtOffset writes byte b at offset of w. No bounds checking is done.
 func writeByteAtOffset(w *[]byte, b byte, offset uint) {
+	DebugPrintf("    writeByteAtOffset byte=0x%x, offset=0x%x", b, offset)
 	(*w)[offset] = b
+
 }
 
 // writeProgramAtOffset serializes a prog's ProgramSet messages at offset of w.
 func writeProgramAtOffset(w *[]byte, prog *pb.Program, offset uint) {
 
+	DebugPrintf("writeProgramAtOffset prog=%v offset=%v", prog, offset)
+
 	var i int
+	var ps *pb.ProgramSet
 
 	// Now write the program at the program offset.
-	for i, ps := range prog.GetProgramSet() {
-		fmt.Println("i = ", i)
+	for i, ps = range prog.GetProgramSet() {
+		DebugPrintf("Writing Program #%d", i)
 		// 8 bytes per program set.
 		progset_start := offset + uint(i*8)
 
-		fmt.Println("writeByteAtOffset", byte(ps.GetModifier()), progset_start)
+		DebugPrintf("Writing GetModifier (program #%d):", i)
 		writeByteAtOffset(w, byte(ps.GetModifier()), progset_start)
-		fmt.Println("writeByteAtOffset", byte(ps.GetMillisecondsBetweenKeys()), progset_start+1)
+		DebugPrintf("Writing GetMillisecondsBetweenKeys (program #%d):", i)
 		writeByteAtOffset(w, byte(ps.GetMillisecondsBetweenKeys()), progset_start+1)
 
+		DebugPrintf("Writing Program code:")
+
 		keys := ps.GetKeys()
-		for j := 0; j < 6; j++ {
+		for j := 0; j < 6; j++ { // 6 characters max per program set
 			// Defaults to 0 (0x00).
 			var key pb.HIDKeyboardKey
 
@@ -86,7 +102,6 @@ func writeProgramAtOffset(w *[]byte, prog *pb.Program, offset uint) {
 				key = keys[j]
 			}
 
-			fmt.Println("writeByteAtOffset", byte(key), progset_start+2+uint(j))
 			writeByteAtOffset(w, byte(key), progset_start+2+uint(j))
 		}
 	}
@@ -95,13 +110,30 @@ func writeProgramAtOffset(w *[]byte, prog *pb.Program, offset uint) {
 	// which signify to the MAX Falcon firmware the end of the program.
 	i += 1
 	progset_start := offset + uint(i*8)
+	DebugPrintf("Writing Finish with a FD type program set:")
 	writeByteAtOffset(w, byte(fd_stop), progset_start)
 
 	// Fill the remaining bytes of the remaining program sets with 0x00. For the
 	// math involved here, see firmware-format.md.
-	for j := progset_start + 1; j < offset+800-8; j += 1 {
-		writeByteAtOffset(w, byte(0x00), j)
+	padWithZeroes(progset_start+1, offset, w)
+}
+
+// Fill the remaining bytes of the remaining program sets with 0x00. For the
+// math involved here, see firmware-format.md.
+func padWithZeroes(progset_start uint, offset uint, w *[]byte) {
+
+	var mem_pos uint
+
+	DebugPrintf("Padding remaining program bytes with 0x00:")
+
+	DebugPrintf("    start writeZeroAtOffset byte=0x%x, offset=0x%x", byte(0x00), progset_start)
+
+	for mem_pos = progset_start; mem_pos < offset+800-8; mem_pos += 1 {
+		(*w)[mem_pos] = byte(0x00)
 	}
+
+	DebugPrintf("    end   writeZeroAtOffset byte=0x%x, offset=0x%x", byte(0x00), mem_pos)
+
 }
 
 // writeFirmware writes the verified bindings to w.
@@ -125,9 +157,9 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 	}
 
 	// Bindings have already been verified, so no need to check errors.
-	for _, b := range bs {
+	for i, b := range bs {
 		binding := b.binding()
-		fmt.Printf("0x%x\n", b.boff)
+		DebugPrintf("Button #%d, offset = 0x%x", i, b.boff)
 
 		if binding.GetKey() != pb.HIDKeyboardKey_NULL {
 			// GetKey() has already been validated, so we can be assured its length is
@@ -140,12 +172,16 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 			// Already validated, so no need to check error.
 			k, _ := StringToHID(b.binding().GetString_()[0])
 			writeByteAtOffset(w, byte(k), b.boff)
+
 		} else if prog := binding.GetProgram(); prog != nil {
 			// This signifies that the button points to a Program.
 			writeByteAtOffset(w, byte(b.key_prog), b.boff)
 
 			writeProgramAtOffset(w, prog, b.progoff)
+
+			return
 		} else {
+
 			// Should never get here, because the binding has been verified already.
 			panic(fmt.Sprintf("invalid binding state: %v", binding))
 		}
@@ -164,6 +200,7 @@ func main() {
 	flag.StringVar(&fpath, "firmware_bin_path", "", "path to the firmware on the device; modified in-place.")
 	flag.BoolVar(&showhelp, "help", false, "show this help")
 	flag.BoolVar(&showversion, "version", false, "show current software version")
+	flag.BoolVar(&DEBUG, "debug", false, "show debug messages")
 
 	flag.Parse()
 
@@ -202,14 +239,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	output, err := prototext.Marshal(&bindings)
+	_, err = prototext.Marshal(&bindings)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "error marshaling proto: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println(string(output))
+	DebugPrintf("Input file:\n %s", prototext.Format(&bindings))
 
 	if err = VerifyButtonBindings(&bindings); err != nil {
 		fmt.Fprintf(os.Stderr, "error verifying button bindings: %v\n", err)
@@ -251,7 +288,7 @@ func main() {
 		fmt.Fprintf(os.Stderr, "unable to write %s (%s)", fpath, err)
 		os.Exit(1)
 	}
-	fmt.Println("bytes written:", n)
+	fmt.Println("Bytes written:", n)
 
-	os.Exit(1)
+	os.Exit(0)
 }
