@@ -1,8 +1,8 @@
 # Rogersm Simple MAX Falcon 8 Programmer
 
-A cross-platform, CLI firmware programmer for the [MAX Falcon-8 custom programmable keyboard](http://www.maxkeyboard.com/max-falcon-8-custom-programmable-mini-macropad-mechanical-keyboard-assembled.html),
-a handy little 8 key keyboard made by MAX. **Note** that this is NOT the newer
-MAX Falcon 8 *RGB* model
+A cross-platform, CLI firmware programmer for the [MAX Falcon-8 custom programmable keyboard](http://www.maxkeyboard.com/max-falcon-8-custom-programmable-mini-macropad-mechanical-keyboard-assembled.html), a handy little 8 key keyboard made by MAX.
+
+**Note** that this is NOT the newer MAX Falcon 8 *RGB* model
 (http://www.maxkeyboard.com/max-falcon-8-rgb-custom-programmable-mini-macropad-mechanical-keyboard-assembled.html).
 
 The programmer supplied by the fine folks at MAX is Windows only, and while it
