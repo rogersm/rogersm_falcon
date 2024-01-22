@@ -91,7 +91,7 @@ func writeProgramAtOffset(w *[]byte, prog *pb.Program, offset uint) {
 		DebugPrintf("Writing Program code:")
 
 		keys := ps.GetKeys()
-		for j := 0; j < 6; j++ { // 6 characters max per program set
+		for j := 0; j < 6; j++ { // 6 characters max per program set. HID packet can send 6 events in a single packet.
 			// Defaults to 0 (0x00).
 			var key pb.HIDKeyboardKey
 
