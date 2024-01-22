@@ -179,7 +179,6 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 
 			writeProgramAtOffset(w, prog, b.progoff)
 
-			return
 		} else {
 
 			// Should never get here, because the binding has been verified already.
