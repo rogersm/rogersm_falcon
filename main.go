@@ -163,12 +163,12 @@ func writeFirmware(w *[]byte, bindings *pb.ButtonBindings) {
 		DebugPrintf("Button #%d, offset = 0x%x", i, b.boff)
 
 		if binding.GetKey() != pb.HIDKeyboardKey_NULL {
-			// GetKey() has already been validated, so we can be assured its length is
-			// 1.
+			// GetKey() has already been validated, so we can be assured
+			// its length is 1.
 			writeByteAtOffset(w, byte(b.binding().GetKey()), b.boff)
 		} else if binding.GetString_() != "" {
-			// GetString_() has already been verified, so we can be assured its length
-			// 1.
+			// GetString_() has already been verified, so we can be assured
+			// its length 1.
 
 			// Already validated, so no need to check error.
 			k, _ := StringToHID(b.binding().GetString_()[0])
