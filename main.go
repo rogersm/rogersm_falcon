@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 )
 
-const VERSION = "2.1.0"
+const VERSION = "2.1.1"
 
 // Looking at the top of the Max Falcon-8:
 //
@@ -39,7 +39,7 @@ const (
 	loc_prog7 = 0x665c
 	loc_prog8 = 0x697c
 
-	// This "key," when assigned to the button signifies that the button is not an
+	// This "key" when assigned to the button signifies that the button is not an
 	// individual key but a Program.
 	key_prog1 = 0xd7
 	key_prog2 = 0xd8
@@ -128,6 +128,7 @@ func padWithZeroes(progset_start uint, offset uint, w *[]byte) {
 
 	DebugPrintf("    start writeZeroAtOffset byte=0x%x, offset=0x%x", byte(0x00), progset_start)
 
+	// 800 is the max program length - 8 that is the program set (header) occupies 8 bytes
 	for mem_pos = progset_start; mem_pos < offset+800-8; mem_pos += 1 {
 		(*w)[mem_pos] = byte(0x00)
 	}
@@ -214,8 +215,8 @@ func main() {
 	}
 
 	// we only can run the program if
-	// text_proto != "" && fpath != ""
-	// text_proto != "" && verify_only
+	// text_proto != "" && fpath != "" -> We have an input (text_proto) and an output (fpath)
+	// text_proto != "" && verify_only -> We have an input (text_proto) that we want to verify (verify_only)
 
 	// so, if we don't meet these conditions we show which parameters are needed:
 

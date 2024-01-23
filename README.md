@@ -132,14 +132,44 @@ button4 {
 ```
 
 Take into account that it has been reported that in macos using a list of keys in a program set:
-````
+```
     program_set {
       milliseconds_between_keys: 2
       keys: [KEY_f_F, KEY_r_R, KEY_i_I, KEY_e_E, KEY_n_N, KEY_d_D]
       # Note: `string` values are not supported in program_sets.
     }
 ```
-may produce a bug and the keys will appear alphabetically ordered in your computer, not respecting the order of the keys in the list. To overcome this issue it's better to create 6 program sets with a single key pressing rather than a single program_set with 6 keypresses.
+may produce a bug and the keys will appear alphabetically ordered in your computer, not respecting the order of the keys in the list. To overcome this issue it's better to create 6 program sets with a single key pressing rather than a single program_set with 6 keypresses. That means recoding the list as:
+
+```
+ program {
+
+    program_set {
+        milliseconds_between_keys: 0
+        keys: [KEY_f_F ]
+    }
+        program_set {
+        milliseconds_between_keys: 0
+        keys: [ KEY_r_R]
+    }
+        program_set {
+        milliseconds_between_keys: 0
+        keys: [KEY_i_I ]
+    }
+        program_set {
+        milliseconds_between_keys: 0
+        keys: [KEY_e_E ]
+    }
+        program_set {
+        milliseconds_between_keys: 0
+        keys: [KEY_n_N ]
+    }
+        program_set {
+        milliseconds_between_keys: 0
+        keys: [KEY_d_D ]
+    }
+  }
+```
 
 #### Key constants
 
